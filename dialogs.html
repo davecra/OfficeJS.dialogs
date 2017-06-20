@@ -36,6 +36,12 @@ Date: 2017-06-19T15:44EST
             // setup the form
             $("#textCaption").text(settings.Caption);
             $("#textMessage").text(settings.Text);
+            $("#checkBoxDialogLabel").click(function() 
+            {
+                /** @type {boolean} */
+                var c = $("#checkBoxDialog").prop("checked"); 
+                $("#checkBoxDialog").prop("checked", !c); 
+            });
             if(settings.DialogType == "msg") {
                 // we are in a messagebox scenario so we can show or
                 // hide the checkbox and hide the inputbox

@@ -151,6 +151,8 @@ function msgbox() {
             if(result == "CANCELLED") {
                 // user clicked the (X) to close the dialog
                 button = "Cancel";
+                checked = false;
+            } else if (result == "NOERROR") {
                 button = JSON.parse(arg.message).Button;
                 checked = JSON.parse(arg.message).Checked;
             } else {
