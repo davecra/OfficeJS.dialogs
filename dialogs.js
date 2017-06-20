@@ -88,7 +88,7 @@ function msgbox() {
             if(icon == null) icon = MessageBoxIcons.None;
             if(withcheckbox == null) withcheckbox = false;
             if(checkboxtext == null) checkboxtext = "";
-            if(asynResult == null) {
+            if(asyncResult == null) {
                 throw("No callback specified for MessageBox. Cannot proceed.");
             }
             /**
@@ -108,7 +108,7 @@ function msgbox() {
                 msgHeight = 26; // without
             }
             // show the dialog
-            Office.context.ui.displayDialogAsync(getUrl() + "dialog.html",
+            Office.context.ui.displayDialogAsync(getUrl() + "dialogs.html",
                     { height: msgHeight, width: msgWidth, displayInIframe: isOfficeOnline() },
                     function (result) {
                         dialog = result.value;
@@ -193,7 +193,7 @@ function ibox(text, caption, defaultValue, asyncResult) {
             }
             if(caption == null) caption = "";
             if(defaultvalue == null) defaultvalue = "";
-            if(asynResult == null) {
+            if(asyncResult == null) {
                 throw("No callback specified for InputBox. Cannot proceed.");
             }
             /**
@@ -211,7 +211,7 @@ function ibox(text, caption, defaultValue, asyncResult) {
             var msgWidth = 40;
             var msgHeight = 25;
             // show the dialog
-            Office.context.ui.displayDialogAsync(getUrl() + "dialog.html",
+            Office.context.ui.displayDialogAsync(getUrl() + "dialogs.html",
                     { height: msgHeight, width: msgWidth, displayInIframe: isOfficeOnline() },
                     function (result) {
                         dialog = result.value;
@@ -515,7 +515,7 @@ function form() {
 function getUrl(convert){
     try {
         // /** @type {string} */
-        var url = document.location.href;
+        var url = getScriptURL(); // document.location.href;
         if(convert) {
             url = "https://" + document.location.host + "/";
         }
@@ -571,3 +571,10 @@ function dialogErrorCheck(error) {
             return "NOERROR";
     }
 }
+
+var getScriptURL = (function() {
+    var scripts = document.getElementsByTagName('script');
+    var index = scripts.length - 1;
+    var myScript = scripts[index];
+    return function() { return myScript.src; };
+})();

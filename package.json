@@ -1,0 +1,28 @@
+{
+  "name": "officejs.dialogs",
+  "version": "1.0.1",
+  "description": "A library that provides a simple MessageBox, InputBox and Form patterns using the Office.ui.dialog for OfficeJS solutions.",
+  "main": "dialogs.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davecra/OfficeJS.dialogs.git"
+  },
+  "keywords": [
+    "officejs",
+    "ui",
+    "dialog",
+    "messagebox",
+    "javascript",
+    "inputbox",
+    "form"
+  ],
+  "author": "David E. Craig",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/davecra/OfficeJS.dialogs/issues"
+  },
+  "homepage": "https://github.com/davecra/OfficeJS.dialogs#readme"
+}
