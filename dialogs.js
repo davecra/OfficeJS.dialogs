@@ -42,7 +42,6 @@ var MessageBoxIcons = {
     Stop: "Stop",                   // Stop
     Warning: "Warning"              // Warning
 };
-
 /**
  * An enum of Message Box Button types
  * @readonly
@@ -57,7 +56,6 @@ var MessageBoxButtons = {
     RetryCancel: "RetryCancel",
     AbortRetryCancel: "AbortRetryCancel" 
 };
-
 /**
  * A class for creating message boxes in OfficeJS Web Addins
  * @class
@@ -67,7 +65,6 @@ function msgbox() {
     var dialog;
     /** @type {function(string,boolean)} */
     var callback;
-
     /**
      * Shows the message box, with the provided parameters
      * @param {string} text The message to be shown in the message box
@@ -82,6 +79,18 @@ function msgbox() {
      */
     this.Show = function(text, caption, buttons, icon, withcheckbox, checkboxtext, asyncResult) {
         try {
+            // verify
+            if(text == null || text.length == 0) {
+                throw("No text for messagebox. Cannot proceeed.");
+            }
+            if(caption == null) caption = "";
+            if(buttons == null) buttons = MessageBoxButtons.Ok;
+            if(icon == null) icon = MessageBoxIcons.None;
+            if(withcheckbox == null) withcheckbox = false;
+            if(checkboxtext == null) checkboxtext = "";
+            if(asynResult == null) {
+                throw("No callback specified for MessageBox. Cannot proceed.");
+            }
             /**
              * Define the settings for the HTML form 
              * @type {object} 
@@ -89,19 +98,15 @@ function msgbox() {
             var settings = { Text: text, Caption: caption, Buttons: buttons,
                             Icon: icon, WithCheckbox: withcheckbox, 
                             CheckBoxText: checkboxtext, DialogType: "msg" };
-            
             // set the storage item for the dialog form
             localStorage.setItem("dialogSettings", JSON.stringify( settings ));
-
             // set the callback
             callback = asyncResult;
-
             var msgWidth = 40;
             var msgHeight = 30; // with checkbox
             if(!withcheckbox) {
                 msgHeight = 26; // without
             }
-
             // show the dialog
             Office.context.ui.displayDialogAsync(getUrl() + "dialog.html",
                     { height: msgHeight, width: msgWidth, displayInIframe: isOfficeOnline() },
@@ -118,7 +123,16 @@ function msgbox() {
             console.log(e);
         }
     }
-
+    /**
+     * Resets the MessageBox object for reuse
+     */
+    this.Reset = function() {
+        try {
+            MessageBox = new msgbox();
+        } catch(e) {
+            console.log(e);
+        }
+    };
     /**
      * Processes the message from the dialog HTML
      * @param {string | string} arg An object with the results
@@ -152,7 +166,6 @@ function msgbox() {
     }
     return this;
 }
-
 /**
  * Shows the input box, with the provided parameters
  * @class
@@ -166,31 +179,37 @@ function ibox(text, caption, defaultValue, asyncResult) {
      * Shows the input box, with the provided parameters
      * @param {string} text The message to be shown in the input box
      * @param {string} [caption] The caption on the top of the input box
-     * @param {string} [defaultValue] The default value to be provided
+     * @param {string} [defaultvalue] The default value to be provided
      * @param {function(string)} asyncResult Results after the input box is mismissed. If the
      *                                       returned string is empty, then the user pressed
      *                                       cancel. Otherwise it contains the value the user
      *                                       typed into the form
      */
-    this.Show = function(text, caption, defaultValue, asyncResult) {
+    this.Show = function(text, caption, defaultvalue, asyncResult) {
         try {
+                        // verify
+            if(text == null || text.length == 0) {
+                throw("No text for InputBox. Cannot proceeed.");
+            }
+            if(caption == null) caption = "";
+            if(defaultvalue == null) defaultvalue = "";
+            if(asynResult == null) {
+                throw("No callback specified for InputBox. Cannot proceed.");
+            }
             /**
              * Define the settings for the HTML form 
              * @type {object} 
              * */
             var settings = { Text: text, Caption: caption, Buttons: MessageBoxButtons.OkCancel,
                                 Icon: MessageBoxIcons.Question, WithCheckbox: false, 
-                                CheckBoxText: "", DialogType: "input", DefaultValue: defaultValue };
+                                CheckBoxText: "", DialogType: "input", DefaultValue: defaultvalue };
             
             // set the storage item for the dialog form
             localStorage.setItem("dialogSettings", JSON.stringify( settings ));
-
             // set the callback
             callback = asyncResult;
-
             var msgWidth = 40;
             var msgHeight = 25;
-
             // show the dialog
             Office.context.ui.displayDialogAsync(getUrl() + "dialog.html",
                     { height: msgHeight, width: msgWidth, displayInIframe: isOfficeOnline() },
@@ -208,7 +227,16 @@ function ibox(text, caption, defaultValue, asyncResult) {
             console.log(e);
         }
     }
-
+    /**
+     * Resets the MessageBox object for reuse
+     */
+    this.Reset = function() {
+        try {
+            InputBox = new ibox();
+        } catch (e) {
+            console.log(e);
+        }
+    };
     /**
      * Processes the message from the dialog HTML
      * @param {string | string} arg An object with the results
@@ -238,10 +266,8 @@ function ibox(text, caption, defaultValue, asyncResult) {
             console.log(e);
         }
     }
-
     return this;
 }
-
 /**
  * This class helps create a user form in a dialog
  * @class
@@ -249,7 +275,6 @@ function ibox(text, caption, defaultValue, asyncResult) {
 function form() {
     /** @type {object} */
     var dialog;
-
     /**
      * Internal referenced values 
      * @type { } 
@@ -262,7 +287,6 @@ function form() {
         AsyncResult: { },
         Dialog: { }
     }
-
     /**
      * Property: Get/Set: The url for the form
      * @param {string} [item] SETTER: The url item you want to set
@@ -288,7 +312,6 @@ function form() {
             return null;
         }
     }
-
     /**
      * Property: Get/Set: The Height of the form
      * @param {Number} [item] SETTER: The height you want the form to be
@@ -306,7 +329,6 @@ function form() {
             return null;
         }
     }
-
     /**
      * Property: Get/Set: The Width of the form
      * @param {Number} [item] SETTER: The width you want the form to be
@@ -324,7 +346,6 @@ function form() {
             return null;
         }
     }
-
     /**
      * Property: Get/Set: If true the form will close when a message is recieved.
      *                    If false, the caller will have to handle the dialog.close();
@@ -343,7 +364,6 @@ function form() {
             return null;
         }
     }
-
     /**
      * Property: Set Only: Sets the callback function only
      * @param {function(string)} The callback function
@@ -356,7 +376,6 @@ function form() {
             return null;
         }
     }
-
     /**
      * Method: Will close the dialog
      */
@@ -368,7 +387,6 @@ function form() {
             return null;
         }
     }
-
     /**
      * Shows a form, with the provided parameters
      * @param {string} [url] The url to the form
@@ -409,17 +427,17 @@ function form() {
                 } else {
                     value.Url = url; // a fully qualified url
                 }
-            }
+            } 
             // handle close
             if(handleclose != null) {
                 value.HandleClose = handleclose;
             }
             // verify
             if(value.Url == null || value.Url.length == 0) {
-                throw("No url specified");
+                throw("No url specified for form. Cannot proceed.");
             }
             if(!value.AsyncResult) {
-                throw("No callback - asyncResult - specified.");
+                throw("No callback specified for form. Cannot proceed.");
             }
             // show the dialog
             Office.context.ui.displayDialogAsync(value.Url,
@@ -438,7 +456,16 @@ function form() {
             console.log(e);
         } 
     }
-
+    /**
+     * Resets the Form object for reuse
+     */
+    this.Reset = function() {
+        try {
+            Form = new form();
+        } catch(e) {
+            console.log(e);
+        }
+    };
     /**
      * Processes the message from the dialog HTML
      * @param {string | string} arg An object with the results
@@ -476,9 +503,7 @@ function form() {
         }
     }
 }
-
 /* HELPER FUNCTIONS */
-
 /**
  * Gets the URL of this JS file so we can then grab the dialog html
  * that will be in the same folder
@@ -506,7 +531,6 @@ function getUrl(convert){
         return null;
     }
 }
-
 /**
  * Returns whether the platform is OffOnline
  * @returns {boolean} True if it is OfficeOnline
@@ -523,7 +547,6 @@ function isOfficeOnline() {
         return false;
     }
 }
-
 /**
  * Returns the error details if there is an error number
  * @param {Number} error 
