@@ -1,6 +1,6 @@
 {
   "name": "officejs.dialogs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A library that provides a simple MessageBox, InputBox and Form patterns using the Office.ui.dialog for OfficeJS solutions.",
   "main": "dialogs.js",
   "scripts": {
