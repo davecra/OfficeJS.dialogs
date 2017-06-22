@@ -1,5 +1,5 @@
 /*!
- * dialogs JavaScript Library v1.0.2
+ * dialogs JavaScript Library v1.0.3
  * http://theofficecontext.com
  *
  * Copyright David E. Craig and other contributors
@@ -556,21 +556,12 @@ function isOfficeOnline() {
  *                   or CANCELLED if the dialog was cancelled
  */
 function dialogErrorCheck(error) {
-    switch (error) {
-        case 12004:
-            return "The domain of the URL passed to the dialog is not trusted.";
-        case 12005:
-            return "The URL passed to the dialog uses the HTTP protocol. HTTPS is required.";
-        case 12003:
-            return "The URL passed to the dialog uses the HTTP protocol. HTTPS is required.";
-        case 12007:
-            return "A dialog box is already opened from this host window.";
-        case 12002:
-            return "The dialog box has been directed to a page that cannot be found or loaded.";
-        case 12006:
-            return "CANCELLED";
-        default:
-            return "NOERROR";
+    if(error == 12006) {
+        return "CANCELLED";
+    } else if(error > 0 ) {
+        return error.message;
+    } else {
+        return "NOERROR";
     }
 }
 
