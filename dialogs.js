@@ -1,5 +1,5 @@
 /*!
- * dialogs JavaScript Library v1.0.4
+ * dialogs JavaScript Library v1.0.5
  * http://theofficecontext.com
  *
  * Copyright David E. Craig and other contributors
