@@ -1,7 +1,8 @@
+
 ![LOGO](https://davecra.files.wordpress.com/2017/07/officejs-dialogs.png?w=698)
-## Introduction
+# Introduction
 The OfficeJS.dialogs library provides simple to use dialogs in OfficeJS/Office Web Add-in (formally called Apps for Office) solutions. The secondary purpose of the library is to help bring some familiarity (from VBA/VB/C#) into OfficeJS development. Currently, the following dialogs types are present:
-* MessageBox
+* [MessageBox](README.MD#MessageBox)
 * Alert
 * InputBox
 * Progress
@@ -9,7 +10,7 @@ The OfficeJS.dialogs library provides simple to use dialogs in OfficeJS/Office W
 
 In the following sections each of these will be details with proper usage.
 
-## MessageBox
+# MessageBox
 The MessageBox class has four public methods:
 * Reset()
 * Show([text],[caption],[buttons],[icon],[withcheckbox],[checkboxtext],[asyncResult],[processupdates])
@@ -43,3 +44,17 @@ This method returns true of the MessageBox is currently being displayed to the u
 
 ### MessageBox.CloseDialog()
 If you issue a MessageBox.Show() and you set the [processupdated] flag to true, then you can use this method. Otherwise this will fail. This will close the currently displayed MessageBox.
+
+# Alert
+The alert dialog is the simplest of all. It has only two methods: Show() and Displayed(). Here are the details:
+* Show([text], [asyncResult])
+* Displayed()
+
+### Alert.Show()
+The Alert.Show() method will display a simple dialog with only up to 256 characters of text and an OK button. When the user presses OK, the dialog is dismissed. When the user presses OK, the callabck [asyncResult] is called. Here are the details on the paramters.
+* [text:string/256] (required) - This is the message you wish to display to the user. It is trimmed at 256 characters in length.
+* [asynResult:function()] (required) - This is the callback which is invoked when the user presses the OK button or clicks the (X) in the upper right of the dialog. There are no paramters in the callback.
+
+### Alert.Displayed()
+This method returns true of an Alert is currently being displayed to the user.
+
