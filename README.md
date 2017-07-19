@@ -1,23 +1,22 @@
-
 ![LOGO](https://davecra.files.wordpress.com/2017/07/officejs-dialogs.png?w=698)
 # Introduction
 The OfficeJS.dialogs library provides simple to use dialogs in OfficeJS/Office Web Add-in (formally called Apps for Office) solutions. The secondary purpose of the library is to help bring some familiarity (from VBA/VB/C#) into OfficeJS development. Currently, the following dialogs types are present:
 * [MessageBox](#MessageBox)
-* Alert
-* InputBox
-* Progress
-* Wait
+* [Alert](#Alert)
+* [InputBox](#ImputBox)
+* [Progress](#Progress)
+* [Wait](#Wait)
 
 In the following sections each of these will be details with proper usage.
 
 # MessageBox
 The MessageBox class has four public methods:
-* Reset()
-* Show([text],[caption],[buttons],[icon],[withcheckbox],[checkboxtext],[asyncResult],[processupdates])
-* Update([text],[caption],[buttons],[icon],[withcheckbox],[checkboxtext],[asyncResult])
-* UpdateMessage([text],[asyncResult])
-* Displayed()
-* CloseDialog()
+* [Reset()](#MessageBox.Reset())
+* [Show](#MessageBox.Show())([text],[caption],[buttons],[icon],[withcheckbox],[checkboxtext],[asyncResult],[processupdates])
+* [Update](#MessageBox.Update())([text],[caption],[buttons],[icon],[withcheckbox],[checkboxtext],[asyncResult])
+* [UpdateMessage](#MessageBox.UpdateMessage()]([text],[asyncResult])
+* [Displayed()](#MessageBox.Displayed())
+* [CloseDialog()](#MessageBox.CloseDialog()]
 
 ### MessageBox.Reset()
 You should issue this command each and every time you are about to request a messagebox dialog. This reset the environment and verifies that no previous dialogs or settings interfere with your new dialog request.
