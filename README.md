@@ -1,4 +1,4 @@
-
+![LOGO](https://davecra.files.wordpress.com/2017/07/officejs-dialogs.png?w=698)
 ## Introduction
 The OfficeJS.dialogs library provides simple to use dialogs in OfficeJS/Office Web Add-in (formally called Apps for Office) solutions. The secondary purpose of the library is to help bring some familiarity (from VBA/VB/C#) into OfficeJS development. Currently, the following dialogs types are present:
 * MessageBox
