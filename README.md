@@ -9,7 +9,7 @@ The OfficeJS.dialogs library provides simple to use dialogs in OfficeJS/Office W
 
 In the following sections each of these will be details with proper usage.
 
-# MessageBox
+# MessageBox<a name="MessageBox"></a>
 The MessageBox class has four public methods:
 * [Reset()](#MessageBox.Reset())
 * [Show](#MessageBox.Show())([text],[caption],[buttons],[icon],[withcheckbox],[checkboxtext],[asyncResult],[processupdates])
@@ -44,7 +44,7 @@ This method returns true of the MessageBox is currently being displayed to the u
 ### MessageBox.CloseDialog()
 If you issue a MessageBox.Show() and you set the [processupdated] flag to true, then you can use this method. Otherwise this will fail. This will close the currently displayed MessageBox.
 
-# Alert
+# Alert<a name="Alert"></a>
 The alert dialog is the simplest of all. It has only two methods: Show() and Displayed(). Here are the details:
 * Show([text], [asyncResult])
 * Displayed()
