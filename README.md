@@ -14,7 +14,7 @@ The MessageBox class has four public methods:
 * [Reset()](#MessageBoxReset)
 * [Show](#MessageBoxShow)([text],[caption],[buttons],[icon],[withcheckbox],[checkboxtext],[asyncResult],[processupdates])
 * [Update](#MessageBoxUpdate)([text],[caption],[buttons],[icon],[withcheckbox],[checkboxtext],[asyncResult])
-* [UpdateMessage](#MessageBoxUpdateMessage]([text],[asyncResult])
+* [UpdateMessage](#MessageBoxUpdateMessage)([text],[asyncResult])
 * [Displayed()](#MessageBoxDisplayed)
 * [CloseDialog()](#MessageBoxCloseDialog)
 
