@@ -138,4 +138,4 @@ This is an example of the Wait dialog from the code above:
 This closes the open Wait dialog.
 
 ### Wait.Displayed()<a name="WaitDisplayed"></a>
-This method returns true if a Wait dialog is currently being displayed to the user.
+This method returns true if a Wait dialog is currently being displayed to the user. 
