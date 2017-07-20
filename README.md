@@ -53,7 +53,7 @@ The Show method will display a MessageBox dialog with a caption, a message, a se
 ```
 This is an example of one MessageBox from the above code:
 
-<img src=https://davecra.files.wordpress.com/2017/07/messagebox-sample.png width=600>
+![MessageBox Dialog](https://davecra.files.wordpress.com/2017/07/messagebox-sample.png?w=600)
 
 ### MessageBox.Update()<a name="MessageBoxUpdate"></a>
 If you issue a [MessageBox.Show()](#MessageBoxShow) and you set the [processupdated] flag to true, then you can use this method. Otherwise this will fail. What this method does is update a currently displayed messagebox with new information. This has all the same paramaters as the [MessageBox.Show()](#MessageBoxShow) with the exception of the processupdated flag (since the dialog is already setup to allow you to issue updates). You must issue a new callback as well to handle the new updated response. For information on what each paramater does, and defaults, see the [MessageBox.Show()](#MessageBoxShow) method.
@@ -90,7 +90,7 @@ The Alert.Show() method will display a simple dialog with only up to 256 charact
 
 This is an example of the Alert dialog from the code above:
 
-<img src="https://davecra.files.wordpress.com/2017/07/messagebox-sample.png" width=500>
+![Alert Dialog](https://davecra.files.wordpress.com/2017/07/messagebox-sample.png?w=500)
 
 ### Alert.Displayed()<a name="AlertDisplayed"></a>
 This method returns true if an Alert dialog is currently being displayed to the user.
@@ -99,7 +99,49 @@ This method returns true if an Alert dialog is currently being displayed to the 
 This section is TDB.
 
 # Progress<a name="Progress"></a>
-This section is TDB.
+This section is TBD.
+
+Here is some example code that display a Progress dialog and then uses a seperate function with a timer to update it until it hits 100%:
+
+```javascript
+function dotIt() {
+  // display a progress bar form and set it from 0 to 100
+  Progress.Show("Please wait while this happens...", 0, 100, function() {
+      // once the dialog reached 100%, we end up here
+      Progress.Complete();
+      Alert.Show("All done folks!");
+    }, function() {
+      // this is only going to be called if the user cancels
+      Alert.Show("You cancelled the process.");
+      // clean up stuff here...
+
+  });
+  doProgress();
+}
+
+function doProgress() {
+  // increment by one, the result that comes back is
+  // two pieces of information: Cancelled and Value
+  var result = Progress.Update(1);
+  // if we are not cancelled and the value is not 100%
+  // we will keep going, but in your code you will
+  // likely just be incrementing and making sure
+  // at each stage that the user has not cancelled
+  if(!result.Cancelled && result.Value <= 100) {
+    setTimeout(function() {
+      // this is only for our example to
+      // cause the progress bar to move
+      doProgress();
+    },100);
+  } else if(result.Value >= 100) {
+    Progress.Compelte(); // done
+  }
+}
+```
+
+This is an example of a Progress dialog from the code above:
+
+![Progress Dialog](https://davecra.files.wordpress.com/2017/07/progress.png?w=600)
 
 # Wait<a name="Wait"></a>
 This displays a very simple wait dialog box with a spinning GIF. It has only one option and that is to display the cancel button. Here are the available methods:
@@ -132,7 +174,7 @@ Here is an example of how to use the Wait dialog:
 
 This is an example of the Wait dialog from the code above: 
 
-<img src="https://davecra.files.wordpress.com/2017/07/messagebox-sample.png" width=500>
+[Wait Dialog](https://davecra.files.wordpress.com/2017/07/messagebox-sample.png?w=500)
 
 ### Wait.CloseDialog()<a name="WaitCloseDialog"></a>
 This closes the open Wait dialog.
