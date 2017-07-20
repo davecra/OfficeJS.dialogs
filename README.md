@@ -174,7 +174,7 @@ Here is an example of how to use the Wait dialog:
 
 This is an example of the Wait dialog from the code above: 
 
-[Wait Dialog](https://davecra.files.wordpress.com/2017/07/messagebox-sample.png?w=500)
+![Wait Dialog](https://davecra.files.wordpress.com/2017/07/messagebox-sample.png?w=500)
 
 ### Wait.CloseDialog()<a name="WaitCloseDialog"></a>
 This closes the open Wait dialog.
