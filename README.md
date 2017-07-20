@@ -130,6 +130,10 @@ Here is an example of how to use the Wait dialog:
     });
  ```
 
+This is an example of the Wait dialog from the code above: 
+
+<img src="https://davecra.files.wordpress.com/2017/07/messagebox-sample.png" width=500>
+
 ### Wait.CloseDialog()<a name="WaitCloseDialog"></a>
 This closes the open Wait dialog.
 
