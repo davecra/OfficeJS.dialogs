@@ -96,7 +96,20 @@ This is an example of the Alert dialog from the code above:
 This method returns true if an Alert dialog is currently being displayed to the user.
 
 # InputBox<a name="InputBox"></a>
-This section is TDB.
+The InputBox class has the follwoing public methods:
+* [Reset()](#InputBoxReset)
+* [Show](#InputBoxShow)(text,caption,defaultvalue,syncresult)
+* [Displayed()](#InputBoxDisplayed)
+
+### InputBox.Reset()<a name="InputBoxReset"></a>
+You can issue command each time you are about to request a InputBox dialog to assure everything is reset (as it is in the global space). This resets the InputBox global object so that no previous dialog settings interfere with your new dialog request. You should only use this if you encounter issues.
+
+### InputBox.Show()<a name="InputBoxShow"></a>
+This method displays an InputBox to the user with the text message you provide, a caption and a default value. When the user clicks Ok, the result in the callback *asyncresult* will be the text they typed. If the user pressed cancel or clicked the (X) in the upper right of the dialog, the result will be blank. Here are the parameters:
+* [**text**: *string*] (required) - this is the question or message you want the user to see in the InputBox.
+* [**caption**: *string/256*] (optional) - this is the caption that will appear int eh dialog. The default value will be blank.
+* [**defaultvalue**: string] (optional) - this is the default value you want to prepopulate in the textbox od the dialog. The default value is blank.
+* [**asyncresult**: *function*(*string*)] (required) - this is the callback with the result from the dialog. If the user pressed cancel, the result is blank.
 
 The following sample asks the user for a subject and then applies the result to the email message:
 ```javascript
@@ -114,7 +127,10 @@ The following sample asks the user for a subject and then applies the result to 
 
 Here is an example of an InputBox based on the sample code provided above:
 
-![InputBox Dialog](https://davecra.files.wordpress.com/2017/07/inputbox.png?w500)
+![InputBox Dialog](https://davecra.files.wordpress.com/2017/07/inputbox.png?w=500)
+
+### InputBox.Displayed()<a name="InputBoxDisplayed"></a>
+This method returns true if an InputBox dialog is currently being displayed to the user.
 
 # Progress<a name="Progress"></a>
 The Progress class has the following public methods:
