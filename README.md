@@ -10,7 +10,7 @@ The OfficeJS.dialogs library provides simple to use dialogs in OfficeJS/Office W
 In the following sections each of these will be details with proper usage.
 
 # MessageBox<a name="MessageBox"></a>
-The MessageBox class has four public methods:
+The MessageBox class has the following public methods:
 * [Reset()](#MessageBoxReset)
 * [Show](#MessageBoxShow)([text],[caption],[buttons],[icon],[withcheckbox],[checkboxtext],[asyncResult],[processupdates])
 * [Update](#MessageBoxUpdate)([text],[caption],[buttons],[icon],[withcheckbox],[checkboxtext],[asyncResult])
@@ -99,7 +99,23 @@ This method returns true if an Alert dialog is currently being displayed to the 
 This section is TDB.
 
 # Progress<a name="Progress"></a>
-This section is TBD.
+The Progress class has the following public methods:
+* [Reset()](#ProgressReset)
+* [Show](#ProgressShow)([text],[start],[max],[asyncresult],[cancelresult])
+* [Update](#ProgressUpdate)([increment],[text])
+* [Completed()](#ProgressCompleted)
+* [Displayed()](#ProgressDisplayed)
+
+### Progress.Reset()<a name="ProgressReset"></a>
+You can issue command each time you are about to request a progress dialog to assure everything is reset (as it is in the global space). This resets the Progress global object so that no previous dialog settings interfere with your new dialog request. You should only use this if you encounter issues.
+
+### Progress.Show()<a name="ProgressShow"></a>
+This method will display a progress dialog with the spcified text. You will update the dialog with [Progress.Update()](#ProgressUpdate) to change the value of the progress bar and/or the text in the dialog. Once completed, you will call the [ProgressBar.Complete()](#ProgressComplete) method to close the dialog. You will usually make this call from the *asyncresult* callback. If the user presses cancel at any time while the dialog is loaded, the *cancelresult* callback will be called. Here are the function paramaters:
+* [**text**: *string/256*] (optional) - this is the text the user will see. It is limited to 256 characters in length. If none is specified the default is "Please wait..."
+* [**start**: *number*] (optional) - this is the starting number for the progress bar. The default is zero (0).
+* [**max**: *number*] (optional) - this is the max value of the progress bar. The default is 100.
+* [**asyncresult**: *function()*] (optional) - this is the callback when the Progress.Compelte() method is called.
+* [**cancelresult**: *function()*] (optional) - this is the callback when the user presses cancel on the dialog.
 
 Here is some example code that display a Progress dialog and then uses a seperate function with a timer to update it until it hits 100%:
 
@@ -143,6 +159,17 @@ This is an example of a Progress dialog from the code above:
 
 ![Progress Dialog](https://davecra.files.wordpress.com/2017/07/progress.png?w=600)
 
+### Progress.Update()<a name="ProgressUpdate"></a>
+This method will update the progress. By default if you do not pass any paramaters, the progress bar on the dialog will increment by one. However, you also have the option to change the text and/or the progress increment amount. If you specify an increment of zero (0) and specify new text for the dialog, the text will change, but the dialog will not increment. Here are the parameters:
+* [**increment**: *number*] (optional) - this is the amount to increment the progress bar by.
+* [**text**: *string/256*] (optional) - you can change the text on the displayed progress bar by issuing new text. It is limited to 256 characters in length.
+
+### Progress.Compelted()<a name="ProgressCompleted"></a>
+This method will close the progress dialog. You will usually call this from the *asyncresult* callback setup in the [Progress.Show()](#ProgressShow) method. 
+
+### Progress.Displayed()<a name="ProgressDisplayed"></a>
+This method returns true if a Progress dialog is currently being displayed to the user.
+
 # Wait<a name="Wait"></a>
 This displays a very simple wait dialog box with a spinning GIF. It has only one option and that is to display the cancel button. Here are the available methods:
 * [Show](#WaitShow)([text],[showcancel],[cancelresult])
@@ -151,9 +178,9 @@ This displays a very simple wait dialog box with a spinning GIF. It has only one
 
 ### Wait.Show()<a name="WaitShow"></a>
 This displays a simple wait dialog to the user with a spinning GIF. This dialog will remain open until you issue a Wait.DialogClose(). Here are the parameters:
-* [text:string] (optional) - if text is provided, this is the message the user will see above the spinning GIF. Default is "Please wait..."
-* [showcancel:boolean] (optional) - if this is true, then the user will have the option to cancel the dialog. You will need to provide a [cancelresult] callback in thie case. The default is false.
-* [cancelresult:function()] (optional) - if the showcancel option is enabled, this is required to notify your code that the user pressed cancel. There are not paramters provided in the callback. 
+* [**text**: *string*] (optional) - if text is provided, this is the message the user will see above the spinning GIF. Default is "Please wait..."
+* [**showcancel**: *boolean*] (optional) - if this is true, then the user will have the option to cancel the dialog. You will need to provide a [cancelresult] callback in thie case. The default is false.
+* [**cancelresult**: *function()*] (optional) - if the showcancel option is enabled, this is required to notify your code that the user pressed cancel. There are not paramters provided in the callback. 
 
 Here is an example of how to use the Wait dialog:
 ```javascript
