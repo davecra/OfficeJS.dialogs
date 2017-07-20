@@ -98,6 +98,24 @@ This method returns true if an Alert dialog is currently being displayed to the 
 # InputBox<a name="InputBox"></a>
 This section is TDB.
 
+The following sample asks the user for a subject and then applies the result to the email message:
+```javascript
+    InputBox.Show("What is the email subject?", "Email Subject", "Default Email Subject", 
+      function(result) {
+        if(result.length > 0) {
+          // in the server service callback
+          Office.cast.item.toMessageCompose(Office.context.mailbox.item).subject.setAsync(result,
+            function() {
+              Alert.Show("The subject has been set to " + result);
+            });
+        }
+    });
+```
+
+Here is an example of an InputBox based on the sample code provided above:
+
+![InputBox Dialog](https://davecra.files.wordpress.com/2017/07/inputbox.png?w500)
+
 # Progress<a name="Progress"></a>
 The Progress class has the following public methods:
 * [Reset()](#ProgressReset)
