@@ -4,7 +4,8 @@
   "description": "A library that provides a simple MessageBox, InputBox and Form patterns using the Office.ui.dialog for OfficeJS solutions.",
   "main": "dialogs.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "browser-sync start --config bsconfig.json"
   },
   "repository": {
     "type": "git",

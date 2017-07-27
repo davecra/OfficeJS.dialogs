@@ -1,12 +1,45 @@
 /*!
- * dialogs JavaScript Library v1.0.5
+ * dialogs JavaScript Library v1.0.6
  * http://theofficecontext.com
  *
  * Copyright David E. Craig and other contributors
  * Released under the MIT license
  * https://tldrlegal.com/license/mit-license
  *
- * Date: 2017-07-18T15:45EST
+ * Date: 2017-07-26T21:05EST
+ /** 
+  * OfficeJS global
+ */
+var OfficeJS = new dlg();
+/**
+ * OfficeJS.dialogs class
+ */
+function dlg() {
+    /** @type {init} */
+    this.dialogs = new init();
+    return this;
+};
+/**
+ * Init class to hold global strings and other items (TDB)
+ */
+function init() {
+    /** @returns {string} */
+    this.settings = function() { return "OfficeJS.dialogs.settings" };
+    /** @returns {string} */
+    this.message = function() { return "OfficeJS.dialogs.message" };
+    /**
+     * Returns the proper URL to the dialogs html file
+     * CDN usage - TBD
+     */
+    this.GetUrl = function() {
+        /**
+         * @type {string} 
+         */
+        var url = getUrl() + "dialogs.html";
+        return url;
+    }
+    return this;
+};
 /**
  * The global messagebox object for single use of displaying
  * a Message Box in the Office client. Use the Show() method. 
@@ -77,16 +110,13 @@ var MessageBoxButtons = {
 /****************************************************************************************************
  ****************************************************************************************************
  ****************************************************************************************************
+               ***  ****  ***** *   * *   * ***** ****        *****  ***  ****  *   *               
+              *   * *   *   *   **  * **  * *     *   *       *     *   * *   * ** **               
+                *   ****    *   * * * * * * ***   ****        ***   *   * ****  * * *               
+              *   * *       *   *  ** *  ** *     *   *       *     *   * *   * *   *               
+               ***  *     ***** *   * *   * ***** *   *       *      ***  *   * *   *               
  ****************************************************************************************************
  ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
-                                SPINNER FORM
  ****************************************************************************************************/
 /**
  * A class for creating a non-determinate wait spinner
@@ -130,70 +160,54 @@ function spinner() {
                 Text: "", Caption: text, Buttons: buttons,
                 Icon: MessageBoxIcons.None, DialogType: "spinner"
             };
-            localStorage.setItem("dialogSettings", JSON.stringify(value.DialogSettings));
-                        // show the dialog - we do this in a timeout because in
-            // quick succession a dialog may not appear if another
-            // is called
-            setTimeout(function () {
-                Office.context.ui.displayDialogAsync(getUrl() + "dialogs.html",
-                    { height: 32, width: 32, displayInIframe: isOfficeOnline() },
-                    function (result) {
-                        value.Displayed = true;
-                        value.Dialog = result.value;
-                        value.Dialog.addEventHandler(Office.EventType.DialogEventReceived, function (arg) {
-                            close(); // close me
-                            if(value.CancelResult) value.CancelResult();
-                        });
-                        value.Dialog.addEventHandler(Office.EventType.DialogMessageReceived, function (arg) {
-                            close(); // close me
+            localStorage.setItem(OfficeJS.dialogs.settings(), JSON.stringify(value.DialogSettings));
+            // show the dialog 
+            Office.context.ui.displayDialogAsync(OfficeJS.dialogs.GetUrl(),
+                { height: 32, width: 32, displayInIframe: isOfficeOnline() },
+                function (result) {
+                    value.Displayed = true;
+                    value.Dialog = result.value;
+                    value.Dialog.addEventHandler(Office.EventType.DialogEventReceived, function (arg) {
+                        dialogCloseAsync(value.Dialog, function() {
+                            value.Displayed = false;
                             if(value.CancelResult) value.CancelResult();
                         });
                     });
-            }, 500);
+                    value.Dialog.addEventHandler(Office.EventType.DialogMessageReceived, function (arg) {
+                        dialogCloseAsync(value.Dialog, function() {
+                            value.Displayed = false;
+                            if(value.CancelResult) value.CancelResult();
+                        });
+                    });
+                });
         } catch(e) {
             console.log(e);
         }
     }
     /**
      * This method closes the MessageBox
-     * by calling the helper function
+     * by calling the helper function for async
+     * @param {function()} asyncResult Callback after the dialog is closed
      */
-    this.CloseDialog = function () {
-        close();
+    this.CloseDialogAsync = function (asyncResult) {
+        value.Displayed = false;
+        dialogCloseAsync(value.Dialog, asyncResult);
     }
     /**
      * Returns if the dialog is shown
      */
     this.Displayed = function() { return value.Displayed };
-    /**
-     * This method closes the open dialog
-     */
-    function close() {
-        try {
-            if(!value.Dialog) return;
-            /** @type {{message:string, settings: any}} */
-            var message = { message: "close", settings: value.DialogSettings };
-            localStorage.setItem("dialogMessage", JSON.stringify(message));
-            value.Dialog.close();
-            value.Displayed = false;
-        } catch (e) {
-            console.log(e);
-        }
-    }
 };
 /****************************************************************************************************
  ****************************************************************************************************
  ****************************************************************************************************
+           ****  ****   ***   ***  ****  *****  ***   ***        *****  ***  ****  *   *            
+           *   * *   * *   * *     *   * *     *   * *   *       *     *   * *   * ** **            
+           ****  ****  *   * *  ** ****  ***     *     *         ***   *   * ****  * * *            
+           *     *   * *   * *   * *   * *     *   * *   *       *     *   * *   * *   *            
+           *     *   *  ***   ***  *   * *****  ***   ***        *      ***  *   * *   *            
  ****************************************************************************************************
  ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
-                                PROGRESS FORM
  ****************************************************************************************************/
 /**
  * A class for create a progress form
@@ -202,7 +216,7 @@ function spinner() {
 function progress() {
     /**
      * Internal referenced values 
-     * @type {{AsyncResult: {function()}, CancelResult: {function()} Dialog: any, 
+     * @type {{AsyncResult: {function()}, CancelResult: {function()} Dialog: Office.Context.ui.dialog, 
                DialogSettings: any, Cancelled: boolean, Displayed: true}} 
      * */
     var value = {
@@ -219,7 +233,7 @@ function progress() {
      * @param {Number} [start] A number to set the progress bar to
      * @param {Number} [max] A number to set the progress maximum value to
      * @param {{function()}} [asyncresult] Callback once you call Complete()
-     * @param {{function()}} [cancelResult] Callback if the user cancels
+     * @param {{function()}} [cancelresult] Callback if the user cancels
      */
     this.Show = function (text, start, max, asyncresult, cancelresult) {
         try {
@@ -244,28 +258,28 @@ function progress() {
                 CheckBoxText: "", DialogType: "wait",
                 Number: start, Maximum: max
             };
-            localStorage.setItem("dialogSettings", JSON.stringify(value.DialogSettings));
-            // show the dialog - we do this in a timeout because in
-            // quick succession a dialog may not appear if another
-            // is called
-            setTimeout(function () {
-                Office.context.ui.displayDialogAsync(getUrl() + "dialogs.html",
-                    { height: 25, width: 40, displayInIframe: isOfficeOnline() },
-                    function (result) {
-                        value.Displayed = true;
-                        value.Dialog = result.value;
-                        value.Dialog.addEventHandler(Office.EventType.DialogEventReceived, function (arg) {
+            localStorage.setItem(OfficeJS.dialogs.settings(), JSON.stringify(value.DialogSettings));
+            // show the dialog
+            Office.context.ui.displayDialogAsync(OfficeJS.dialogs.GetUrl(),
+                { height: 25, width: 40, displayInIframe: isOfficeOnline() },
+                function (result) {
+                    value.Displayed = true;
+                    value.Dialog = result.value;
+                    value.Dialog.addEventHandler(Office.EventType.DialogEventReceived, function (arg) {
+                        dialogCloseAsync(value.Dialog, function() {
+                            value.Displayed = false;
                             value.Cancelled = true;
-                            close(); // close me
-                            value.CancelResult();
-                        });
-                        value.Dialog.addEventHandler(Office.EventType.DialogMessageReceived, function (arg) {
-                            value.Cancelled = true;
-                            close(); // close me
                             value.CancelResult();
                         });
                     });
-            }, 500);
+                    value.Dialog.addEventHandler(Office.EventType.DialogMessageReceived, function (arg) {
+                        dialogCloseAsync(value.Dialog, function() {
+                            value.Displayed = false;
+                            value.Cancelled = true;
+                            value.CancelResult();
+                        });
+                    });
+                });
         } catch(e) {
             console.log(e);
         }
@@ -289,7 +303,7 @@ function progress() {
             value.DialogSettings.Number += increment;
             /** @type {{message:string, settings: any}} */
             var message = { message: "progress", settings: value.DialogSettings };
-            localStorage.setItem("dialogMessage", JSON.stringify(message));
+            localStorage.setItem(OfficeJS.dialogs.message(), JSON.stringify(message));
             var returnResult = {
                 Value: value.DialogSettings.Number,
                 Cancelled: value.Cancelled
@@ -316,42 +330,24 @@ function progress() {
      * progress form
      */
     this.Complete = function () {
-        value.AsyncResult();
-        close();
-    }
+        value.Displayed = false;
+        dialogCloseAsync(value.Dialog, value.AsyncResult);
+    };
     /**
      * Returns if the dialog is shown
      */
     this.Displayed = function() { return value.Displayed };
-    /**
-     * This method closes the open dialog
-     */
-    function close() {
-        try {
-            if(!value.Dialog) return; 
-            /** @type {{message.string, setings: any}} */
-            var message = { message: "close", settings: value.DialogSettings };
-            localStorage.setItem("dialogMessage", JSON.stringify(message));
-            value.Dialog.close();
-            value.Displayed = false;
-        } catch (e) {
-            console.log(e);
-        }
-    }
 }
 /****************************************************************************************************
  ****************************************************************************************************
  ****************************************************************************************************
+                    *   * *****  ***   ***   ***   ***  ***** ****   ***  *   *                     
+                    ** ** *     *   * *   * *   * *     *     *   * *   *  * *                      
+                    * * * ***     *     *   ***** *  ** ***   ****  *   *   *                       
+                    *   * *     *   * *   * *   * *   * *     *   * *   *  * *                      
+                    *   * *****  ***   ***  *   *  ***  ***** ****   ***  *   *                     
  ****************************************************************************************************
  ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
-                                MESSAGE BOX
  ****************************************************************************************************/
 /**
  * A class for creating message boxes in OfficeJS Web Addins
@@ -379,10 +375,9 @@ function msgbox() {
      * @param {MessageBoxIcons} [icon] The icon to show on the message box, of type MessageBoxIcons
      * @param {boolean} [withcheckbox] Enables a checkbox on the message box below the buttons
      * @param {string} [checkboxtext] The message to show on the message box checkbox
-     * @param {function(button:string, checked:boolean)} asyncResult Results after the message box 
-     *                                                                is dismissed: 
-     *                                                                - button:string result of the button pressed 
-     *                                                                - checked:boolean is the checkbox was checked
+     * @param {function(string, boolean)} asyncResult Results after the message box is dismissed: 
+     *                                                - button:string result of the button pressed 
+     *                                                - checked:boolean is the checkbox was checked
      * @param {boolean} [processupdates] If enabled, the dialog will not close until you issue a
      *                                   MessageBox.CloseDialog(). Instead, you can update the message
      *                                   box by calling:
@@ -413,8 +408,8 @@ function msgbox() {
                 CheckBoxText: checkboxtext, DialogType: "msg"
             };
             // set the storage item for the dialog form
-            localStorage.setItem("dialogMessage", "");
-            localStorage.setItem("dialogSettings", JSON.stringify(value.DialogSettings));
+            localStorage.setItem(OfficeJS.dialogs.message(), "");
+            localStorage.setItem(OfficeJS.dialogs.settings(), JSON.stringify(value.DialogSettings));
             // set the callback
             value.AsyncResult = asyncResult;
             var msgWidth = 40;
@@ -426,7 +421,7 @@ function msgbox() {
             // quick succession a dialog may not appear if another
             // is called
             setTimeout(function () {
-                Office.context.ui.displayDialogAsync(getUrl() + "dialogs.html",
+                Office.context.ui.displayDialogAsync(OfficeJS.dialogs.GetUrl(),
                     { height: msgHeight, width: msgWidth, displayInIframe: isOfficeOnline() },
                     function (result) {
                         value.Displayed = true;
@@ -473,7 +468,7 @@ function msgbox() {
             value.DialogSettings.Text = text;
             /** @type {{ message:string, settings:any }} */
             var message = { message: "update", settings: value.DialogSettings };
-            localStorage.setItem("dialogMessage", JSON.stringify(message));
+            localStorage.setItem(OfficeJS.dialogs.message(), JSON.stringify(message));
         } catch (e) {
             console.log(e);
         }
@@ -521,7 +516,7 @@ function msgbox() {
             /** @type {object} */
             var message = { message: "update", settings: value.DialogSettings };
             // set the storage item for the dialog form
-            localStorage.setItem("dialogMessage", JSON.stringify(message));
+            localStorage.setItem(OfficeJS.dialogs.message(), JSON.stringify(message));
         } catch (e) {
             console.log(e);
         }
@@ -529,29 +524,16 @@ function msgbox() {
     /**
      * This method closes the MessageBox
      * by calling the helper function
+     * @param {function()} asyncResult Callback after the dialog is closed
      */
-    this.CloseDialog = function () {
-        close();
+    this.CloseDialogAsync = function (asyncResult) {
+        value.Displayed = false;
+        dialogCloseAsync(value.Dialog, asyncResult);
     }
     /**
      * Returns if the dialog is shown
      */
     this.Displayed = function() { return value.Displayed };
-    /**
-     * This method closes the open dialog
-     */
-    function close() {
-        try {
-            if(!value.Dialog) return;
-            /** @type {{message:string, settings: any}} */
-            var message = { message: "close", settings: value.DialogSettings };
-            localStorage.setItem("dialogMessage", JSON.stringify(message));
-            value.Dialog.close();
-            value.Displayed = false;
-        } catch (e) {
-            console.log(e);
-        }
-    }
     /**
      * Processes the message from the dialog HTML
      * @param {string | string} arg An object with the results
@@ -579,10 +561,15 @@ function msgbox() {
             }
             // close the dialog if not processing multiple messages
             if (value.HandleClose) {
-                close();
+                // close for the user
+                dialogCloseAsync(value.Dialog, function() {
+                    value.Displayed = false;
+                    value.AsyncResult(button, checked);
+                });
+            } else {
+                // return without closing
+                value.AsyncResult(button, checked);
             }
-            // return
-            value.AsyncResult(button, checked);
         } catch (e) {
             console.log(e);
         }
@@ -592,16 +579,13 @@ function msgbox() {
 /****************************************************************************************************
  ****************************************************************************************************
  ****************************************************************************************************
+               ***  *     ***** ****  *****       ****  *****  ***  *      ***   ***                
+              *   * *     *     *   *   *         *   *   *   *   * *     *   * *                   
+              ***** *     ***   ****    *         *   *   *   ***** *     *   * *  **               
+              *   * *     *     *   *   *         *   *   *   *   * *     *   * *   *               
+              *   * ***** ***** *   *   *         ****  ***** *   * *****  ***   ***                
  ****************************************************************************************************
  ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
-                                ALERT DIALOG
  ****************************************************************************************************/
 /**
  * This is a simple alert dialog
@@ -631,28 +615,28 @@ function notify() {
             value.DialogSettings = {
                 Text: text.substring(0, 256), Buttons: "Ok", CheckBoxText: "", DialogType: "alert"
             }
-            localStorage.setItem("dialogSettings", JSON.stringify(value.DialogSettings));
+            localStorage.setItem(OfficeJS.dialogs.settings(), JSON.stringify(value.DialogSettings));
             var height = ((value.DialogSettings.Text.length / 256) * 10) + 15;      // max: 25
             var width = ((value.DialogSettings.Text.length / 256) * 20) + 20;       // max: 40
-            setTimeout(function () {
-                // show the dialog
-                Office.context.ui.displayDialogAsync(getUrl() + "dialogs.html",
-                    { height: height, width: width, displayInIframe: isOfficeOnline() },
-                    function (result) {
-                        value.Displayed = true;
-                        value.Dialog = result.value;
-                        value.Dialog.addEventHandler(Office.EventType.DialogEventReceived, function (arg) {
-                            value.Dialog.close();
-                            value.Displayed = false;
-                            if (value.AsyncResult) value.AsyncResult();
-                        });
-                        value.Dialog.addEventHandler(Office.EventType.DialogMessageReceived, function (arg) {
-                            value.Dialog.close();
+            // show the dialog
+            Office.context.ui.displayDialogAsync(OfficeJS.dialogs.GetUrl(),
+                { height: height, width: width, displayInIframe: isOfficeOnline() },
+                function (result) {
+                    value.Displayed = true;
+                    value.Dialog = result.value;
+                    value.Dialog.addEventHandler(Office.EventType.DialogEventReceived, function (arg) {
+                        dialogCloseAsync(value.Dialog, function() {
                             value.Displayed = false;
                             if (value.AsyncResult) value.AsyncResult();
                         });
                     });
-            }, 500);
+                    value.Dialog.addEventHandler(Office.EventType.DialogMessageReceived, function (arg) {
+                        dialogCloseAsync(value.Dialog, function() {
+                            value.Displayed = false;
+                            if (value.AsyncResult) value.AsyncResult();
+                        });
+                    });
+            });
         } catch(e) {
             console.log(e);
         }
@@ -665,16 +649,13 @@ function notify() {
 /****************************************************************************************************
  ****************************************************************************************************
  ****************************************************************************************************
+                          ***** *   * ****  *   * ***** ****   ***  *   *                           
+                            *   **  * *   * *   *   *   *   * *   *  * *                            
+                            *   * * * ****  *   *   *   ****  *   *   *                             
+                            *   *  ** *     *   *   *   *   * *   *  * *                            
+                          ***** *   * *      ***    *   ****   ***  *   *                           
  ****************************************************************************************************
  ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
-                                INPUTBOX
  ****************************************************************************************************/
 /**
  * Shows the input box, with the provided parameters
@@ -725,7 +706,7 @@ function ibox(text, caption, defaultValue, asyncResult) {
                 CheckBoxText: "", DialogType: "input", DefaultValue: defaultvalue
             };
             // set the storage item for the dialog form
-            localStorage.setItem("dialogSettings", JSON.stringify(value.DialogSettings));
+            localStorage.setItem(OfficeJS.dialogs.settings(), JSON.stringify(value.DialogSettings));
             // set the callback
             value.AsyncResult = asyncResult;
             var msgWidth = 40;
@@ -734,7 +715,7 @@ function ibox(text, caption, defaultValue, asyncResult) {
             // quick succession a dialog may not appear if another
             // is called
             setTimeout(function () {
-                Office.context.ui.displayDialogAsync(getUrl() + "dialogs.html",
+                Office.context.ui.displayDialogAsync(OfficeJS.dialogs.GetUrl(),
                     { height: msgHeight, width: msgWidth, displayInIframe: isOfficeOnline() },
                     function (result) {
                         value.Displayed = true;
@@ -787,10 +768,11 @@ function ibox(text, caption, defaultValue, asyncResult) {
                 text = JSON.stringify({ Error: result });
             }
             // close the dialog
-            value.Dialog.close();
-            value.Displayed = false;
-            // return
-            value.AsyncResult(text);
+            dialogCloseAsync(value.Dialog, function() {
+                // return
+                value.Displayed = false;
+                value.AsyncResult(text);
+            });
         } catch (e) {
             console.log(e);
         }
@@ -799,16 +781,13 @@ function ibox(text, caption, defaultValue, asyncResult) {
 /****************************************************************************************************
  ****************************************************************************************************
  ****************************************************************************************************
+                  ***  *   *  ***  *****  ***  *   *       *****  ***  ****  *   *                  
+                 *   * *   * *   *   *   *   * ** **       *     *   * *   * ** **                  
+                 *     *   *   *     *   *   * * * *       ***   *   * ****  * * *                  
+                 *   * *   * *   *   *   *   * *   *       *     *   * *   * *   *                  
+                  ***   ***   ***    *    ***  *   *       *      ***  *   * *   *                  
  ****************************************************************************************************
  ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
-                                CUSTOM FORM
  ****************************************************************************************************/
 /**
  * This class helps create a user form in a dialog
@@ -920,7 +899,7 @@ function form() {
     }
     /**
      * Property: Set Only: Sets the callback function only
-     * @param {function(string)} The callback function
+     * @param {function(string)}  - The callback function
      */
     this.AsyncResult = function (item) {
         try {
@@ -933,26 +912,16 @@ function form() {
     /**
      * This method closes the MessageBox
      * by calling the helper function
+     * @param {function()} asyncResult - callback once the dialog is closed
      */
-    this.CloseDialog = function () {
-        close();
+    this.CloseDialogAsync = function (asyncResult) {
+        value.Displayed = false;
+        dialogCloseAsync(value.Dialog, asyncResult);
     }
     /**
      * Returns if the dialog is shown
      */
     this.Displayed = function() { return value.Displayed };
-    /**
-     * This method closes the open dialog
-     */
-    function close() {
-        try {
-            if(!value.Dialog) return;
-            value.Dialog.close();
-            value.Displayed = false;
-        } catch (e) {
-            console.log(e);
-        }
-    }
     /**
      * Shows a form, with the provided parameters
      * @param {string} [url] The url to the form This can take the form:
@@ -970,7 +939,7 @@ function form() {
      * @param {boolean} [handleclose] If true, when the form is dismissed the dialog will be closed.
      *                                Otherwise, it is left open and the caller will have to handle
      *                                the dialog.close()
-     * @param {function(string)} [asyncResult] Results after the form is dismissed. The 
+     * @param {function(string)} [asyncresult] Results after the form is dismissed. The 
      *                                         result will be a JSON object like this:
      *                                         {
      *                                              Error: { },         // Error object
@@ -984,9 +953,9 @@ function form() {
             // verify no other dialogs are open first
             if(isDialogOpen()) throw("A dialog is already open.");
             // set the callback
-            if (asyncResult) {
+            if (asyncresult) {
                 value.AsyncResult = asyncresult;
-            }
+            } else { throw ("No asyncresult defined."); }
             if (height && width) {
                 // set the other values
                 value.Height = height;
@@ -1023,12 +992,12 @@ function form() {
             }
             value.DialogSettings = { Url: value.Url, DialogType: "form", Resize: value.Resize };
             // set the storage item for the dialog form
-            localStorage.setItem("dialogSettings", JSON.stringify(value.DialogSettings));
+            localStorage.setItem(OfficeJS.dialogs.settings(), JSON.stringify(value.DialogSettings));
             // show the dialog - we do this in a timeout because in
             // quick succession a dialog may not appear if another
             // is called
             setTimeout(function () {
-                Office.context.ui.displayDialogAsync(getUrl() + "dialogs.html",
+                Office.context.ui.displayDialogAsync(OfficeJS.dialogs.GetUrl(),
                     { height: value.Height, width: value.Width, displayInIframe: isOfficeOnline() },
                     function (result) {
                         value.Displayed = true;
@@ -1084,10 +1053,15 @@ function form() {
             }
             // close the dialog
             if (value.HandleClose) {
-                close();
+               dialogCloseAsync(value.Dialog, function() {
+                    // return
+                    value.AsyncResult(JSON.stringify(returnVal));
+                    value.Displayed = false;
+               });
+            } else {
+                // return
+                value.AsyncResult(JSON.stringify(returnVal));
             }
-            // return
-            value.AsyncResult(JSON.stringify(returnVal));
         } catch (e) {
             console.log(e);
         }
@@ -1096,17 +1070,42 @@ function form() {
 /****************************************************************************************************
  ****************************************************************************************************
  ****************************************************************************************************
+    *   * ***** *     ****  ***** ****        ***** *   * *   *  ***  ***** *****  ***  *   *  ***  
+    *   * *     *     *   * *     *   *       *     *   * **  * *   *   *     *   *   * **  * *   * 
+    ***** ***   *     ****  ***   ****        ***   *   * * * * *       *     *   *   * * * *   *   
+    *   * *     *     *     *     *   *       *     *   * *  ** *   *   *     *   *   * *  ** *   * 
+    *   * ***** ***** *     ***** *   *       *      ***  *   *  ***    *   *****  ***  *   *  *** 
  ****************************************************************************************************
  ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
- ****************************************************************************************************
-                                HELPER FUNCTIONS
  ****************************************************************************************************/
+/**
+ * Closes the currently open dialog asyncronously.
+ * This has an ugly workaround which is to try to set a new
+ * event handler on the dialog until it fails. When it failed
+ * we know the original dialog object was destroyed and we
+ * can then proceed. The issue we are working around is that
+ * if you call two dialogs back to back, the second one will
+ * likely not open at all.
+ * @param {Office.context.ui.dialog} dialog The dialog to be closed
+ * @param {function()} asyncResult The callback when close is complete
+ */
+ function dialogCloseAsync(dialog, asyncResult){
+    // send a message to the dialog first just to stop any
+    // message pump it may have running. 
+    var message = { message: "close", settings: {} };
+    localStorage.setItem(OfficeJS.dialogs.message(), JSON.stringify(message));
+    // issue the close
+    dialog.close();
+    // and keep here until aync closed
+    setTimeout(function() {
+        try{
+            dialog.addEventHandler(Office.EventType.DialogMessageReceived, function() {});
+            dialogCloseAsync(dialog, asyncResult);
+        } catch(e) {
+            asyncResult(); // done - closed
+        }
+    }, 0);
+}
 /**
  * Returns true of any of our dialog types is open:
  *  - MessageBox
@@ -1131,7 +1130,7 @@ function isDialogOpen() {
  * @returns {string} The URL
  */
 function getUrl(convert) {
-    try {
+    try { 
         /** @type {string} */
         var url = getScriptURL(); // document.location.href;
         if (convert) {
