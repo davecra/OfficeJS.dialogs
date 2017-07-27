@@ -6,6 +6,7 @@ The OfficeJS.dialogs library provides simple to use dialogs in OfficeJS/Office W
 * [InputBox](#InputBox)
 * [Progress](#Progress)
 * [Wait](#Wait)
+* [Form](#Form)
 
 In the following sections each of these will be details with proper usage.
 
@@ -16,7 +17,7 @@ The MessageBox class has the following public methods:
 * [Update](#MessageBoxUpdate)([text],[caption],[buttons],[icon],[withcheckbox],[checkboxtext],[asyncResult])
 * [UpdateMessage](#MessageBoxUpdateMessage)([text],[asyncResult])
 * [Displayed()](#MessageBoxDisplayed)
-* [CloseDialog()](#MessageBoxCloseDialog)
+* [CloseDialogAsync](#MessageBoxCloseDialog)([asyncresult])
 
 ### MessageBox.Reset()<a name="MessageBoxReset"></a>
 You can issue command each time you are about to request a messagebox dialog to assure everything is reset (as it is in the global space). This resets the MessageBox global object so that no previous dialog settings interfere with your new dialog request. You should only use this if you encounter issues.
@@ -43,10 +44,11 @@ The Show method will display a MessageBox dialog with a caption, a message, a se
         MessageBox.UpdateMessage("Do you like Kit Kat bars?", function(buttonThird) {
           /** type {string} */
           var kitkat = (buttonThird == "Yes" ? "do" : "dont");
-          MessageBox.CloseDialog();
-          Alert.Show("You said you " + iceCream + " like ice cream, you " +
-                      jellyBeans + " like jelly beans, and you " + 
-                      kitkat + " like kit kat bars.");
+          MessageBox.CloseDialogAsync(function() {
+            Alert.Show("You said you " + iceCream + " like ice cream, you " +
+                        jellyBeans + " like jelly beans, and you " + 
+                        kitkat + " like kit kat bars.");
+          });
         });
       });
     }, true);
@@ -64,8 +66,13 @@ If you issue a [MessageBox.Show()](#MessageBoxShow) and you set the [processupda
 ### MessageBox.Displayed()<a name="MessageBoxDisplayed"></a>
 This method returns true if a MessageBox dialog is currently being displayed to the user. This is provided in case you wish to verify the dialog is still opened before issuing a [MessageBox.CloseDialog()](#MessageBoxCloseDialog) or [MessageBox.Update()](#MessageBoxUpdate) or [MessageBox.UpdateMessage()](#MessageBoxUpdateMessage).
 
-### MessageBox.CloseDialog()<a name="MessageBoxCloseDialog"></a>
-If you issue a [MessageBox.Show()](#MessageBox.Show) and you set the [processupdated] flag to true, then you can use this method. Otherwise this will fail. This will close the currently displayed MessageBox.
+### MessageBox.CloseDialogAsync()<a name="MessageBoxCloseDialog"></a>
+If you issue a [MessageBox.Show()](#MessageBox.Show) and you set the [processupdated] flag to true, then you can use this method to close the dialog. Otherwise this will fail. This will close the currently displayed MessageBox.
+
+**NOTE**: Because of the way Office dialogs work, all dialogs have to be closed asyncronously in order to avoid situations where trying to open a second dialog will fail, because another one is still in the process of being destroyed.
+
+The CloseDialogAsync has the following paramter:
+* [**asyncResult**: *function()*] (required) - This is callback is invoked when the dialog is completely closed.
 
 # Alert<a name="Alert"></a>
 The alert dialog is the simplest of all. It has only two methods: Show() and Displayed(). Here are the details:
@@ -158,7 +165,7 @@ function dotIt() {
   // display a progress bar form and set it from 0 to 100
   Progress.Show("Please wait while this happens...", 0, 100, function() {
       // once the dialog reached 100%, we end up here
-      Progress.Complete();
+      Progress.CompleteAsync();
       Alert.Show("All done folks!");
     }, function() {
       // this is only going to be called if the user cancels
@@ -207,7 +214,7 @@ This method returns true if a Progress dialog is currently being displayed to th
 # Wait<a name="Wait"></a>
 This displays a very simple wait dialog box with a spinning GIF. It has only one option and that is to display the cancel button. Here are the available methods:
 * [Show](#WaitShow)([text],[showcancel],[cancelresult])
-* [CloseDialog()](#WaitCloseDialog)
+* [CloseDialogAsync()](#WaitCloseDialog)([asyncResult])
 * [Displayed()](#WaitDisplayed)
 
 ### Wait.Show()<a name="WaitShow"></a>
@@ -228,7 +235,7 @@ Here is an example of how to use the Wait dialog:
       if(!cancelled) {
         // in the server service callback
         Office.cast.item.toMessageCompose(Office.context.mailbox.item).subject = result.value;
-        Wait.CloseDialog();
+        Wait.CloseDialogAsync(function() { });
       }
     });
  ```
@@ -237,8 +244,16 @@ This is an example of the Wait dialog from the code above:
 
 ![Wait Dialog](https://davecra.files.wordpress.com/2017/07/wait.png?w=500)
 
-### Wait.CloseDialog()<a name="WaitCloseDialog"></a>
+### Wait.CloseDialogAsync()<a name="WaitCloseDialog"></a>
 This closes the open Wait dialog.
+
+**NOTE**: Because of the way Office dialogs work, all dialogs have to be closed asyncronously in order to avoid situations where trying to open a second dialog will fail, because another one is still in the process of being destroyed.
+
+The CloseDialogAsync has the following paramter:
+* [**asyncResult**: *function()*] (required) - This is callback is invoked when the dialog is completely closed.
 
 ### Wait.Displayed()<a name="WaitDisplayed"></a>
 This method returns true if a Wait dialog is currently being displayed to the user. 
+
+# Form<a name="Form"></a>
+This topic is still TBD. Coming Soon.
