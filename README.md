@@ -369,3 +369,16 @@ Here is what the above dialog look like when issued:
 
 ![Form Dialog](https://davecra.files.wordpress.com/2017/07/formdialog.png?w=300)
 
+Here are the JSON results:
+
+```json
+{
+  "Error":{},
+  "Result":"{
+              'FibbyGibber':'rkejfnlwrjknflkerjnf',
+              'DoDaDay':'Hahahaha',
+              'Message':'My custom message.'
+             }",
+  "Cancelled":false
+}
+```
