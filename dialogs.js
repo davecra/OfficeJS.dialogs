@@ -1,12 +1,12 @@
 /*!
- * dialogs JavaScript Library v1.0.6
+ * dialogs JavaScript Library v1.0.7
  * http://theofficecontext.com
  *
  * Copyright David E. Craig and other contributors
  * Released under the MIT license
  * https://tldrlegal.com/license/mit-license
  *
- * Date: 2017-07-26T21:05EST
+ * Date: 2017-07-28T10:57EST
  /** 
   * OfficeJS global
  */
