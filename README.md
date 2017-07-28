@@ -256,4 +256,116 @@ The CloseDialogAsync has the following paramter:
 This method returns true if a Wait dialog is currently being displayed to the user. 
 
 # Form<a name="Form"></a>
-This topic is still TBD. Coming Soon.
+The custom Form allows you to hook up your own HTML page to use OfficeJS.dialogs framework behind the scenes. You Show() your custom form, recieve callbacks with the information you provide from your form and can handle when and how to close the form. The Form object has the following methods:
+
+* [Reset](#FormReset)()
+* [Url](#FormUrl)([value])
+* [Height](#FormHeight)([value])
+* [Width](#FormWidth)([value])
+* [HandleClose](#FormHandleClose)([value])
+* [AsyncResult](#FormAsyncResult)([value])
+* [CloseDialogAsync](#FormCloseDialogAsync)([asyncResult])
+* [Displayed](#FormDisplayed)()
+* [Show](#FormShow)([url],[height],[width],[handleclose],[asyncresult])
+
+### Form.Reset()<a name="FormReset"></a>
+You can issue command each time you are about to request a new custom form dialog to assure everything is reset (as it is in the global space). This resets the Form global object so that no previous dialog settings interfere with your new dialog request. You should only use this if you encounter issues.
+
+### Form.Url()<a name="FormUrl"></a>
+This method/property will allow you to set the URL or retrieve the url value as a string. Here is the sole argument:
+
+* [**value**: *string*] (get/set) - If no value is specified, it will return the current URL. If a value is specified, the URL for the custom dialog will be set to this location.
+
+### Form.Height()<a name="FormHeight"></a>
+This method/property will allow you to set the height or retrieve the height as a number. Here is the sole argument:
+
+* [**value**: *number*] (get/set) - If no value is specified, it will return the current form height. If a value is specified, the height for the custom dialog will be set to this value.
+
+### Form.Width()<a name="FormWidth"></a>
+This method/property will allow you to set the width or retrieve the width value as a number. Here is the sole argument:
+
+* [**value**: *number*] (get/set) - If no value is specified, it will return the current form width. If a value is specified, the width for the custom dialog will be set to this value.
+
+### Form.HandleClose()<a name="FormHandleClose"></a>
+This method/property will allow you to set whether OfficeJS.dialogs framework will close the dialog when a messageParent call is recieved, or whther your code will handle the close. Here is the sole argument:
+
+* [**value**: *boolean*] (get/set) - If no value is specified, it will return the current setting. If a value is specified, and that value is **true**, then the OfficeJS.dialogs framework will handle the close of the form for you when any message is recieved via the messageParent call. If the value is set to **false**, you will need to handle the closing of the dialog using the CloseDialogAsync() command.
+
+### Form.AsyncResult()<a name="FormAsyncResult"></a>
+This method/property will allow you to set the callback fucntion for the custom form. Here is the sole argument:
+
+* [**value**: *function(string)*] (set only) - Allows you to set the callback function for the close of the form. The callback will recieve a **string** paramater that will return a JSON object formatted as such:
+        {
+             Error: { },         // Error object
+             Result: { },        // JSON from form
+             Cancelled: false,   // boolean if form cancelled with X
+             Dialog: { }         // A reference to the dialog
+        }
+
+### Form.Displayed()<a name="FormDisplayed"></a>
+This method returns true if a Form dialog is currently being displayed to the user. 
+
+### Form.Show()<a name="FormShow"></a>
+This method allows you to open your own custom form using the framework provided by OfficeJS.dialogs. The form you use must conform in the following ways:
+
+* It must have the following references: 
+        <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.9.1.min.js" type="text/javascript"></script>
+        <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
+* It must initialize Office on load:
+        Office.initialize = function(reason) { /*... your code here*/ }
+* It must issue a callback when you want to update your calling code:
+        Office.context.ui.messageParent(JSON.stringify("{'myData':'myValue'}"));
+
+If your dialog does not meet the above requirements, it will not function properly in the OfficeJS.dialogs framework. Here are the parameters for the Show() method:
+
+* [**url**: *string*] (optional) - This is optional only if the Url() value has been set before the Show method is called. Otherwise you will recieve an error. This is the fully qualified URL to your dialog. Please NOTE that cross-domain issues may prevent your code from executing properly if you pass in a URL that is NOT in your current domain.
+* [**height**: *number*] (optional) - This will set the height of the form. If no value is specified in either the Height() property or here, the default height will be set to 1 (minimum value).
+* [**width**: *number*] (optional) - This will set the width of the form. If no value is specified in either the Width() proeprty or here, the default width will be set to 1 (minium value).
+* [**handleclose**: *boolean*] (optional) - This will determine whether the framework will close the form when a messageParent is recieved. If **true** the dialog will be closed automatically when any message is recieved. If **false** you will hae to issue a CloseDialogAsync() when you are ready to close the form.
+* [**asyncresult**: *function(string)*] (optional) - This is the callback with the result from the form when your form issues a messageParent() call. The callback recieves a string and your message will be found in the JSON result as defined in the [AsyncResult()](#FormAsyncResult) section above.
+
+Here is a smple of how to use the Form dialog:
+
+```javascript
+  Form.Show("/test.html", 20,30, false, function(result) {
+    Form.CloseDialogAsync(function() {
+      console.log("here");
+      Alert.Show("The value is: " + result);
+    });
+  });
+```
+
+Here is a sample of the **test.html** as defined above:
+
+```html
+<html>
+    <head>
+        <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.9.1.min.js" type="text/javascript"></script>
+        <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
+        <script>
+            Office.initialize = function(reason) { 
+                $(document).ready(function () {
+                    $("#okButton").click(function() {
+                        // notify the parent - FunctionFile
+                        Office.context.ui.messageParent(JSON.stringify(
+                            { 
+                                "FibbyGibber": "rkejfnlwrjknflkerjnf",
+                                "DoDaDay": "Hahahaha",
+                                "Message" : "My custom message." 
+                            }));
+                    });
+                });
+            };
+        </script>
+    </head>
+    <body>
+        Click the button <br/>
+        <button id="okButton">Ok</button>
+    </body>
+</html>
+```
+
+Here is what the above dialog look like when issued:
+
+![Form Dialog](https://davecra.files.wordpress.com/2017/07/formdialog.png?w=300)
+
