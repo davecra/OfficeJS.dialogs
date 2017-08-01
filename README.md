@@ -23,6 +23,18 @@ Please note, the CDN has CORS issues with any of the Update() commands below. As
 
 For now, the guidance is to use Node Package Manager (NPM) to import the library into your solution.
 
+### Follow
+Please follow my blog for the latest developments on OfficeJS.dialogs. You can find my blog here:
+
+  http://theofficecontext.com
+
+You can use this link to narrow the results only to those posts which relate to this library:
+
+  https://theofficecontext.com/?s=officejs.dialogs
+  
+You can also follow me on Twitter: [@davecra](http://twitter.com/davecra)
+And also on LinkedIn: [davidcr](https://www.linkedin.com/in/davidcr/)
+
 # MessageBox<a name="MessageBox"></a>
 The MessageBox class has the following public methods:
 * [Reset()](#MessageBoxReset)
