@@ -123,7 +123,7 @@ The Alert.Show() method will display a simple dialog with only up to 256 charact
 
 This is an example of the Alert dialog from the code above:
 
-![Alert Dialog](https://davecra.files.wordpress.com/2017/07/messagebox-sample.png?w=500)
+![Alert Dialog](https://davecra.files.wordpress.com/2017/07/alert.png?w=500)
 
 ### Alert.Displayed()<a name="AlertDisplayed"></a>
 This method returns true if an Alert dialog is currently being displayed to the user.
