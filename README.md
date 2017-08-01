@@ -10,6 +10,19 @@ The OfficeJS.dialogs library provides simple to use dialogs in OfficeJS/Office W
 
 In the following sections each of these will be details with proper usage.
 
+### Installation
+To install OfficeJS.dialogs, you can either pull in this repository from GitHub, by cloning it and then importing it into your project, or using the following command in your preferred coding environment with Node installed:
+
+```
+npm install officejs.dialogs
+```
+
+There is also a CDN here: https://cdn.rawgit.com/davecra/OfficeJS.dialogs/master/dialogs.js
+
+Please note, the CDN has CORS issues with any of the Update() commands below. As such, you will be able to display a Progress dialog, but you will be completely unable to update it (increment). You will also be unable to use the MessageBox.Update() command as well. If you have no need for these commands, by all means, please use the CDN, but be aware of these limitations.
+
+For now, the guidance is to use Node Package Manager (NPM) to import the library into your solution.
+
 # MessageBox<a name="MessageBox"></a>
 The MessageBox class has the following public methods:
 * [Reset()](#MessageBoxReset)
