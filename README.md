@@ -26,6 +26,32 @@ This is a breif history of updates that have been applied:
 
 In the following sections each of these will be details with proper usage.
 
+### Installation
+To install OfficeJS.dialogs, you can either pull in this repository from GitHub, by cloning it and then importing it into your project, or using the following command in your preferred coding environment with Node installed:
+
+```
+npm install officejs.dialogs
+```
+
+There is also a CDN here: https://cdn.rawgit.com/davecra/OfficeJS.dialogs/master/dialogs.js
+
+Please note, the CDN has CORS issues with any of the Update() commands below. As such, you will be able to display a Progress dialog, but you will be completely unable to update it (increment). You will also be unable to use the MessageBox.Update() command as well. If you have no need for these commands, by all means, please use the CDN, but be aware of these limitations.
+
+For now, the guidance is to use Node Package Manager (NPM) to import the library into your solution.
+
+### Follow
+Please follow my blog for the latest developments on OfficeJS.dialogs. You can find my blog here:
+
+![LOGO](https://davecra.files.wordpress.com/2017/07/blog-icon-large.png?w=20) http://theofficecontext.com
+
+You can use this link to narrow the results only to those posts which relate to this library:
+
+* https://theofficecontext.com/?s=officejs.dialogs
+  
+![TWITTER](https://davecra.files.wordpress.com/2010/10/tlogo.png?w=20) You can also follow me on Twitter: [@davecra](http://twitter.com/davecra)
+
+![LINKEDIN](https://davecra.files.wordpress.com/2014/02/inbug-60px-r.png?w=20) And also on LinkedIn: [davidcr](https://www.linkedin.com/in/davidcr/)
+
 # MessageBox<a name="MessageBox"></a>
 The MessageBox class has the following public methods:
 * [Reset()](#MessageBoxReset)
@@ -113,7 +139,7 @@ The Alert.Show() method will display a simple dialog with only up to 256 charact
 
 This is an example of the Alert dialog from the code above:
 
-![Alert Dialog](https://davecra.files.wordpress.com/2017/07/messagebox-sample.png?w=500)
+![Alert Dialog](https://davecra.files.wordpress.com/2017/07/alert.png?w=500)
 
 ### Alert.Displayed()<a name="AlertDisplayed"></a>
 This method returns true if an Alert dialog is currently being displayed to the user.
