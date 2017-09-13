@@ -7,6 +7,22 @@ The OfficeJS.dialogs library provides simple to use dialogs in OfficeJS/Office W
 * [Progress](#Progress)
 * [Wait](#Wait)
 * [Form](#Form)
+* [PrintPreview](#PrintPreview)
+
+# Update History
+Current version:  1.0.8
+Publish Date:     9/13/2017
+
+This is a breif history of updates that have been applied:
+
+* Version 1.0.1 - support for MessageBox, InputBox and custom Form
+* Version 1.0.2 - bug fixes, streamlining code
+* Version 1.0.3 - better error handling, cancel code
+* Version 1.0.4 - support for Wait form, Progress Dialog, and async updates on MessageBox and ProgressBar while forms are still loaded.
+* Version 1.0.5 - removed external image references, converted to inline base64 strings. Bug fixes.
+* Version 1.0.6 - converted to classes, bug fixes, updated inline jsdoc documentation, standardized, fixed issues with close dialog - one after another - known bug in OfficeJS/Outlook/OWA
+* Version 1.0.7 - bug fixes, code cleanup, documentation added README.md
+* Version 1.0.8 - support for PrintPreview, code cleanup , bug fixes
 
 In the following sections each of these will be details with proper usage.
 
@@ -214,6 +230,7 @@ This method returns true if a Progress dialog is currently being displayed to th
 # Wait<a name="Wait"></a>
 This displays a very simple wait dialog box with a spinning GIF. It has only one option and that is to display the cancel button. Here are the available methods:
 * [Show](#WaitShow)([text],[showcancel],[cancelresult])
+* [Reset()](#WaitReset)
 * [CloseDialogAsync()](#WaitCloseDialog)([asyncResult])
 * [Displayed()](#WaitDisplayed)
 
@@ -243,6 +260,9 @@ Here is an example of how to use the Wait dialog:
 This is an example of the Wait dialog from the code above: 
 
 ![Wait Dialog](https://davecra.files.wordpress.com/2017/07/wait.png?w=500)
+
+### Wait.Reset()<a name="WaitReset"></a>
+You can issue command each time you are about to request a wait dialog to assure everything is reset (as it is in the global space). This resets the Wait global object so that no previous dialog settings interfere with your new dialog request. You should only use this if you encounter issues.
 
 ### Wait.CloseDialogAsync()<a name="WaitCloseDialog"></a>
 This closes the open Wait dialog.
@@ -382,3 +402,41 @@ Here are the JSON results:
   "Cancelled":false
 }
 ```
+
+# PrintPreview<a name="PrintPreview"></a>
+The PrintPreview form allows you to send any HTML to the dialog to de displayed in the form (via iframe). In the dialog the user will have the option to cancel, or to Print. When the user clicks Print a new window will be opened, the contents of the frame will be placed in the window and it will be printed. The PrintPreview object has the following methods:
+
+* [Reset](#PrintReset)()
+* [Displayed](#PrintDisplayed)()
+* [Show](#PrintShow)([html],[cancelresult])
+
+### PrintPreview.Reset()<a name="PrintReset"></a>
+You can issue command each time you are about to request a PrintPreview dialog to assure everything is reset (as it is in the global space). This resets the PrintPreview global object so that no previous dialog settings interfere with your new dialog request. You should only use this if you encounter issues.
+
+### PrintPreview.Displayed()<a name="PrintDisplayed"></a>
+This method returns true if a PrintPreview dialog is currently being displayed to the user. 
+
+### PrintPreview.Show()<a name="PrintShow"></a>
+This method opens the PrintPreview dialog using the HTML by OfficeJS.dialogs. Here are the parameters for the Show() method:
+
+* **html**: *string* (required) - This is the html you want to display in the dialog. You cna either get this from the document/body/selection of the Office item you are using or submit your own custom HTML if printing a custom form, for example.
+* [**cancelresult**: *function()*] (optional) - This is the callback if the user presses cancel. It is not required.
+
+Here is a smple of how to use the PrintPreview dialog:
+
+```javascript
+  // this example takes the currently composed email message in Outlook,
+  // grabs its body HTML and then displays it in the Print Preview dialog.
+  var mailItem = Office.cast.item.toItemCompose(Office.context.mailbox.item);
+  mailItem.saveAsync(function(asyncResult) {
+    var id = asyncResult.id;
+    mailItem.body.getAsync(Office.CoercionType.Html, { asyncContext: { var3: 1, var4: 2 } }, function(result) {
+      var html = result.value;
+      PrintPreview.Show(html, function() {
+        Alert.Show("Print cancelled");
+      });
+    });
+  });
+```
+
+![PrintPreview Dialog](https://davecra.files.wordpress.com/2017/07/print.png?w=300)

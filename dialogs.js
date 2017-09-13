@@ -1,12 +1,12 @@
 /*!
- * dialogs JavaScript Library v1.0.7
+ * dialogs JavaScript Library v1.0.8
  * http://theofficecontext.com
  *
  * Copyright David E. Craig and other contributors
  * Released under the MIT license
  * https://tldrlegal.com/license/mit-license
  *
- * Date: 2017-07-28T10:57EST
+ * Date: 2017-09-13T10:27EST
  /** 
   * OfficeJS global
  */
@@ -40,6 +40,11 @@ function init() {
     }
     return this;
 };
+/**
+ * The global PrintPreview object for single use of displaying
+ * a print preview in the Office client. Use the Show() method. 
+ */
+var PrintPreview = new print();
 /**
  * The global messagebox object for single use of displaying
  * a Message Box in the Office client. Use the Show() method. 
@@ -107,6 +112,102 @@ var MessageBoxButtons = {
     RetryCancel: "RetryCancel",
     AbortRetryCancel: "AbortRetryCancel"
 };
+/****************************************************************************************************
+ ****************************************************************************************************
+ ****************************************************************************************************
+                    ****  ****  ***** *   * *****       *****  ***  ****  *   *                     
+                    *   * *   *   *   **  *   *         *     *   * *   * ** **                     
+                    ****  ****    *   * * *   *         ***   *   * ****  * * *                     
+                    *     *   *   *   *  **   *         *     *   * *   * *   *                     
+                    *     *   * ***** *   *   *         *      ***  *   * *   *                     
+ ****************************************************************************************************
+ ****************************************************************************************************
+ ****************************************************************************************************/
+/**
+ * A class for creating a print preview dialog
+ */
+function print() {
+    /**
+     * Internal referenced values 
+     * @type {{CancelResult: {function()}, Dialog: any, 
+               DialogSettings: any, Displayed: true}} 
+     * */
+    var value = {
+        CancelResult: null,
+        Dialog: null,
+        DialogSettings: {},
+        Displayed: false
+    };
+    /**
+     * This displays the print preview dialog with the content you specify with HTML
+     * In Office you can export the selection or the entire document/message as 
+     * raw HTML and pass it to this function to display it as it appears on screen
+     * and then print it.
+     * @param {string} [html]   The html to be printed
+     * @param {{function()}} [cancelResult] Callback if the user cancels
+     */
+    this.Show = function(html, cancelresult) {
+        try {
+            // verify no other dialogs are open first
+            if(isDialogOpen()) throw("A dialog is already open.");
+            if (html === undefined || html === null || html == "") {
+                html = "<html></html>";
+            } 
+            var buttons = MessageBoxButtons.OkCancel;
+            var content = btoa(unescape(encodeURIComponent(html)));
+            value.CancelResult = cancelresult;
+            value.DialogSettings = {
+                Text: content, Caption: "Print Preview", Buttons: buttons,
+                Icon: MessageBoxIcons.None, DialogType: "print"
+            };
+            localStorage.setItem(OfficeJS.dialogs.settings(), JSON.stringify(value.DialogSettings));
+            // show the dialog 
+            Office.context.ui.displayDialogAsync(OfficeJS.dialogs.GetUrl(),
+                { height: 60, width: 60, displayInIframe: isOfficeOnline() },
+                function (result) {
+                    value.Displayed = true;
+                    value.Dialog = result.value;
+                    value.Dialog.addEventHandler(Office.EventType.DialogEventReceived, function (arg) {
+                        dialogCloseAsync(value.Dialog, function() {
+                            value.Displayed = false;
+                            if(value.CancelResult) value.CancelResult();
+                        });
+                    });
+                    value.Dialog.addEventHandler(Office.EventType.DialogMessageReceived, function (arg) {
+                        dialogCloseAsync(value.Dialog, function() {
+                            value.Displayed = false;
+                            if(value.CancelResult) value.CancelResult();
+                        });
+                    });
+                });
+        } catch(e) {
+            console.log(e);
+        }
+    }
+    /**
+     * Resets the PrintPreview object for reuse
+     */
+    this.Reset = function () {
+        try {
+            PrintPreview = new print();
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    /**
+     * This method closes the PrintPreview dialog
+     * by calling the helper function for async
+     * @param {function()} asyncResult Callback after the dialog is closed
+     */
+    this.CloseDialogAsync = function (asyncResult) {
+        value.Displayed = false;
+        dialogCloseAsync(value.Dialog, asyncResult);
+    }
+    /**
+     * Returns if the dialog is shown
+     */
+    this.Displayed = function() { return value.Displayed };
+}
 /****************************************************************************************************
  ****************************************************************************************************
  ****************************************************************************************************
@@ -184,6 +285,16 @@ function spinner() {
             console.log(e);
         }
     }
+    /**
+     * Resets the SpinnerForm object for reuse
+     */
+    this.Reset = function () {
+        try {
+            Wait = new spinner();
+        } catch (e) {
+            console.log(e);
+        }
+    };
     /**
      * This method closes the MessageBox
      * by calling the helper function for async
@@ -1119,7 +1230,8 @@ function isDialogOpen() {
            InputBox.Displayed() ||
            Alert.Displayed() ||
            Progress.Displayed() ||
-           Form.Displayed();
+           Form.Displayed() ||
+           PrintPreview.Displayed();
 }
 /**
  * Gets the URL of this JS file so we can then grab the dialog html

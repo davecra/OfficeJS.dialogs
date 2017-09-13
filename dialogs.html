@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <!-- 
-* dialogs JavaScript Library v1.0.7
+* dialogs JavaScript Library v1.0.8
 * http://theofficecontext.com
 *
 * Copyright David E. Craig and other contributors
 * Released under the MIT license
 * https://tldrlegal.com/license/mit-license
 *
-* Date: 2017-07-28T10:57EST
+* Date: 2017-09-13T10:27EST
 -->
 <html>
 <head>
@@ -147,21 +147,55 @@
             $("#progressDiv").hide();
             $("#spinnerDiv").show();
             $("#checkBoxDialog").hide();
+            $("#printPreview").hide();
             $("#checkbox").hide();
             $("#inputBox").hide();
             $("#header").hide();
             $("#wait").show();
             $("#waitCaption").addClass("center");
+        } else if(settings.DialogType == "print") {
+            $("#dialog").hide();
+            $("#progressDiv").hide();
+            $("#spinnerDiv").hide();
+            $("#checkBoxDialog").hide();
+            $("#checkbox").hide();
+            $("#inputBox").hide();
+            $("#header").show();
+            $("#wait").hide();
+            $("#printPreview").show();
+            var iframe = document.createElement("iframe");
+            $("#printPreview").append(iframe);
+            iframe.style="width:100%;height:400px";
+            iframe.sandbox = "allow-modals"
+            iframe.contentWindow.document.open();
+            var content = decodeURIComponent(escape(atob(settings.Text)));
+            iframe.contentWindow.document.write(content);
+            iframe.contentWindow.document.close();
+            $("#OkBbutton-text").text("Print"); 
+            setTimeout(function() {
+                $("#buttonOk").unbind('click');
+                $("#buttonOk").click(function() {
+                    var w = window.open();
+                    var html = iframe.contentWindow.document.body.outerHTML;
+                    debugger;
+                    $(w.document.body).html(html);
+                    w.print();
+                    w.close();
+                    callParent("success");
+                });
+            }, 500);
         } else if(settings.DialogType == "alert") {
             $("#dialog").show();
             $("#wait").hide();
             $("#checkBoxDialog").hide();
+            $("#printPreview").hide();
             $("#checkbox").hide();
             $("#inputBox").hide();
             $("#header").hide();
         } else if(settings.DialogType == "msg") {
             $("#dialog").show();
             $("#wait").hide();
+            $("#printPreview").hide();
             // we are in a messagebox scenario so we can show or
             // hide the checkbox and hide the inputbox
             $("#checkBoxDialog").hidden = !settings.ShowCheckbox;
@@ -179,6 +213,7 @@
             $("#wait").hide();
             $("#checkbox").hide();
             $("#inputBox").show();
+            $("#printPreview").hide();
             $("#inputBox").val(settings.DefaultValue);
         } else if(settings.DialogType == "wait") {
             $("#dialog").hide();
@@ -186,6 +221,7 @@
             $("#spinnerDiv").hide();
             $("#checkbox").hide();
             $("#inputBox").hide();
+            $("#printPreview").hide();
             $("#wait").show();
             $("#bar").prop("max", settings.Max);
             $("#bar").prop("value", settings.Number);
@@ -367,6 +403,8 @@
                 </div>
             </div>
         </div>
+        <div id="printPreview">
+        </div>
         <div id="dialog" class="ms-alert-dialog__grid ms-Grid">
             <div id="header" class="ms-alert-dialog__row ms-Grid-row">
                 <div class="ms-alert-dialog__col ms-Grid-col">
@@ -432,7 +470,7 @@
             <!-- OK Button -->
             <button class="ms-Button ms-Button--primary" id="buttonOk">
                 <span class="ms-Button-icon"></span>
-                <span class="ms-Button-label" id="button1-text">Ok</span>
+                <span class="ms-Button-label" id="OkBbutton-text">Ok</span>
                 <span class="ms-Button-description" id="button1-desc">Ok button.</span>
             </button>
             <!-- Retry Button -->
