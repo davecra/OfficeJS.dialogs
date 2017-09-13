@@ -465,4 +465,4 @@ Here is a smple of how to use the PrintPreview dialog:
   });
 ```
 
-![PrintPreview Dialog](https://davecra.files.wordpress.com/2017/09/print.png?w=300)
+![PrintPreview Dialog](https://davecra.files.wordpress.com/2017/09/print.png?w=500)
