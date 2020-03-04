@@ -40,9 +40,9 @@ npm install officejs.dialogs
     <AppDomain>https://cdn.jsdelivr.net</AppDomain>
   </AppDomains>
 ```
-However, as of this writing, the displayDialogAsync command does not support CDN for HTML pages. This library requires the dialogs.html page in the same folder to be able to display the dialog. ![There are even more limitations to be aware of.](https://docs.microsoft.com/en-us/office/dev/add-ins/develop/dialog-api-in-office-add-ins) At this point it is suggested you only use a local NPM copy.
+However, as of this writing, the displayDialogAsync command does not support CDN for HTML pages. This library requires the dialogs.html page in the same folder to be able to display the dialog. [There are even more limitations to be aware of.](https://docs.microsoft.com/en-us/office/dev/add-ins/develop/dialog-api-in-office-add-ins) At this point it is suggested you only use a local NPM copy.
 
-**NOTE**: If you were using the OLD CDN, please stop using it: https://cdn.rawgit.com/davecra/OfficeJS.dialogs/master/dialogs.js. This was on ![RAWGIT and that site is being archived soon](https://rawgit.com/).
+**NOTE**: If you were using the OLD CDN, please stop using it: https://cdn.rawgit.com/davecra/OfficeJS.dialogs/master/dialogs.js. This was on [RAWGIT and that site is being archived soon](https://rawgit.com/).
 
 Please note, the CDN has CORS issues with any of the Update() commands below. As such, you will be able to display a Progress dialog, but you will be completely unable to update it (increment). You will also be unable to use the MessageBox.Update() command as well. If you have no need for these commands, by all means, please use the CDN, but be aware of these limitations.
 
