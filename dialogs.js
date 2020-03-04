@@ -1,12 +1,12 @@
 /*!
- * dialogs JavaScript Library v1.0.8
+ * dialogs JavaScript Library v1.0.9
  * http://theofficecontext.com
  *
  * Copyright David E. Craig and other contributors
  * Released under the MIT license
  * https://tldrlegal.com/license/mit-license
  *
- * Date: 2017-09-13T10:27EST
+ * Date: 2018-03-04T14:36EST
  /** 
   * OfficeJS global
  */
@@ -1209,12 +1209,7 @@ function form() {
     dialog.close();
     // and keep here until aync closed
     setTimeout(function() {
-        try{
-            dialog.addEventHandler(Office.EventType.DialogMessageReceived, function() {});
-            dialogCloseAsync(dialog, asyncResult);
-        } catch(e) {
-            asyncResult(); // done - closed
-        }
+        asyncResult(); // done - closed
     }, 0);
 }
 /**
