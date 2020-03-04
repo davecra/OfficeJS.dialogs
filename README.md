@@ -10,8 +10,8 @@ The OfficeJS.dialogs library provides simple to use dialogs in OfficeJS/Office W
 * [PrintPreview](#PrintPreview)
 
 # Update History
-Current version:  1.0.8
-Publish Date:     9/13/2017
+Current version:  1.0.9
+Publish Date:     3/4/2020
 
 This is a breif history of updates that have been applied:
 
@@ -23,6 +23,7 @@ This is a breif history of updates that have been applied:
 * Version 1.0.6 - converted to classes, bug fixes, updated inline jsdoc documentation, standardized, fixed issues with close dialog - one after another - known bug in OfficeJS/Outlook/OWA
 * Version 1.0.7 - bug fixes, code cleanup, documentation added README.md
 * Version 1.0.8 - support for PrintPreview, code cleanup , bug fixes
+* Version 1.0.9 - fixed an issue with dialogs closing, updated warning on using CDN
 
 In the following sections each of these will be details with proper usage.
 
@@ -33,7 +34,15 @@ To install OfficeJS.dialogs, you can either pull in this repository from GitHub,
 npm install officejs.dialogs
 ```
 
-There is also a CDN here: https://cdn.rawgit.com/davecra/OfficeJS.dialogs/master/dialogs.js
+**NOTE**: There is a CDN on https://cdn.jsdelivr.net/gh/davecra/officejs.dialogs/dialogs.js. However, this will not function as expected. First, to use the CDN you will need to add "https://cdn.jsdelivr.net" as an AppDomain in your manifest file: 
+```
+  <AppDomains>
+    <AppDomain>https://cdn.jsdelivr.net</AppDomain>
+  </AppDomains>
+```
+However, as of this writing, the displayDialogAsync command does not support CDN for HTML pages. This library requires the dialogs.html page in the same folder to be able to display the dialog. ![There are even more limitations to be aware of.](https://docs.microsoft.com/en-us/office/dev/add-ins/develop/dialog-api-in-office-add-ins) At this point it is suggested you only use a local NPM copy.
+
+**NOTE**: If you were using the OLD CDN, please stop using it: https://cdn.rawgit.com/davecra/OfficeJS.dialogs/master/dialogs.js. This was on ![RAWGIT and that site is being archived soon](https://rawgit.com/).
 
 Please note, the CDN has CORS issues with any of the Update() commands below. As such, you will be able to display a Progress dialog, but you will be completely unable to update it (increment). You will also be unable to use the MessageBox.Update() command as well. If you have no need for these commands, by all means, please use the CDN, but be aware of these limitations.
 
