@@ -671,7 +671,7 @@ function msgbox() {
                 button = JSON.stringify({ Error: result });
             }
             // close the dialog if not processing multiple messages
-            if (value.HandleClose) {
+            if (value.HandleClose && !arg.error) {
                 // close for the user
                 dialogCloseAsync(value.Dialog, function() {
                     value.Displayed = false;
